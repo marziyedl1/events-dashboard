@@ -1,0 +1,33 @@
+{
+  "name": "events-management",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "prepare": "husky",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@nuxtjs/i18n": "^10.2.1",
+    "@pinia/nuxt": "^0.11.3",
+    "nuxt": "^4.2.2",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@nuxt/eslint": "^1.12.1",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.7.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "typescript-eslint": "^8.53.0"
+  }
+}
