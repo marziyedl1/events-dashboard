@@ -1,16 +1,18 @@
-import { useQuery } from '@tanstack/vue-query'
 import { queryKeys } from '~/configs/queryKeys'
+import type { ApiEvent } from '~/types'
+
+async function fetchEvents() {
+  return await $fetch<ApiEvent[]>('/api/events/')
+}
 
 export function useGetEventListQuery() {
+  const key = Array.isArray(queryKeys.events)
+    ? queryKeys.events.join(':')
+    : String(queryKeys.events)
 
-  const { isError, data, isLoading } = useQuery({
-    queryFn: async () => {
-      const data = await $fetch('/api/events/')
-      return data
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
-    queryKey: queryKeys.events
-  })
-  return { isError, data, isLoading }
+  const { data, pending, error, refresh } = useAsyncData<ApiEvent[]>(key, fetchEvents)
+
+  const isError = computed(() => Boolean(error.value))
+
+  return { data, isLoading: pending, isError, error, refresh }
 }
