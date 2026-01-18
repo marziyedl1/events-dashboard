@@ -9,10 +9,10 @@ import { useGetEventListQuery } from "./composables/useGetEventListQuery";
 
 const store = useLocalEventsStore()
 
-const { data, isSuccess } = useGetEventListQuery()
+const { data, isLoading } = useGetEventListQuery()
 
 watchEffect(() => {
-  if (isSuccess.value && data.value) {
+  if (!isLoading.value && data.value) {
     store.init(data.value)
   }
 })

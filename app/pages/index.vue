@@ -1,5 +1,13 @@
 <template>
-  <section class="flex flex-wrap gap-4 mx-auto p-4">
+  <Loading
+    v-if="events.length === 0"
+    text="Loading events..."
+  />
+
+  <section
+    v-else
+    class="flex flex-wrap gap-4 mx-auto p-4"
+  >
     <div
       v-for="event in events"
       :key="event.id"

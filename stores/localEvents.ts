@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { ApiEvent, LocalEvent } from '@/app/types/event'
+import type { ApiEvent, LocalEvent } from '~/types/event'
 
 const STORAGE_KEY = 'aditus:local-events:v1'
 

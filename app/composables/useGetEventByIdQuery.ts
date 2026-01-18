@@ -8,7 +8,7 @@ export default function useGetEventByIdQuery(id: MaybeRefOrGetter<string>) {
 
     const { isError, data, isLoading } = useQuery({
         queryKey: queryKeys.event(idRef.value),
-        queryFn: () => $fetch<ApiEvent>(`/api/events/${encodeURIComponent(idRef.value)}`),
+        queryFn: () => $fetch<ApiEvent>(`/events/${encodeURIComponent(idRef.value)}`),
         enabled: computed(() => !!idRef.value && !isLocalEvent.value)
     })
     return { isError, data, isLoading }
