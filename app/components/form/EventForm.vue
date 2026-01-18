@@ -85,7 +85,7 @@
 
 <script setup lang="ts">
 import type { EventType, ApiEvent } from "~/types";
-import { validate } from "../../utils/formValidation";
+import { validate } from "~/utils/formValidation";
 
 const props = defineProps<{
   mode: "create" | "edit";

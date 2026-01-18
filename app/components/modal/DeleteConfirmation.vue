@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalEventsStore } from '~~/stores/localEvents';
+import { useLocalEventsStore } from '@/stores/localEvents';
 
 const props = defineProps<{
   open: boolean;
