@@ -100,8 +100,8 @@ const emit = defineEmits<{
 const form = ref<ApiEvent>({
   name: props.formData?.name  ||"",
   year: Number(props.formData?.year  || new Date().getFullYear()),
-  startDate: props.formData?.startDate  || new Date().toISOString().slice(0, 10),
-  endDate: props.formData?.endDate  || new Date().toISOString().slice(0, 10),
+  startDate: toDateInput(props.formData?.startDate)  || new Date().toISOString().slice(0, 10),
+  endDate: toDateInput(props.formData?.endDate)  || new Date().toISOString().slice(0, 10),
   type: (props.formData?.type ??  "Online") as EventType,
 });
 
@@ -113,5 +113,10 @@ function onSubmit() {
   if (validationErrors && validationErrors.length > 0) return;
 
   emit("submit", { ...form.value });
+}
+
+function toDateInput(value?: string) {
+  if (!value) return new Date().toISOString().slice(0, 10)
+  return value.split('T')[0]
 }
 </script>

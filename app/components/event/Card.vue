@@ -6,13 +6,7 @@
     <div class="flex items-start justify-between gap-2">
       <div>
         <h3 class="text-lg font-semibold text-gray-900">
-          <NuxtLink
-            :to="`/event/${event.id}`"
-            class="font-medium text-gray-900 hover:underline"
-            @click.stop
-          >
-            {{ event.name }}
-          </NuxtLink>
+          {{ event.name }}
         </h3>
 
         <p class="text-sm text-gray-500">
@@ -39,24 +33,20 @@
   </article>
 </template>
 
-
 <script setup lang="ts">
-import type { ApiEvent } from '~/types'
+import type { ApiEvent } from "~/types";
 
-const props = defineProps<{
-  event: ApiEvent
-}>()
+const props = defineProps<{ event: ApiEvent }>();
 
 const emit = defineEmits<{
-  select: [string]
-  delete: [string]
-}>()
+  select: [string];
+  delete: [string];
+}>();
 
-const onSelect = () => emit('select', props.event.id as string)
-const onDelete = () => emit('delete', props.event.id as string)
+const onSelect = () => emit("select", String(props.event.id ?? ""));
+const onDelete = () => emit("delete", String(props.event.id ?? ""));
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleDateString()
+  return new Date(date).toLocaleDateString();
 }
 </script>
-

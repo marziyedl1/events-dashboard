@@ -5,6 +5,22 @@
   />
 
   <section
+    v-else-if="isError"
+    class="mx-auto p-4"
+  >
+    <div class="rounded-xl border bg-white p-6 text-sm text-red-700">
+      Failed to load events.
+      <button
+        type="button"
+        class="ml-2 underline"
+        @click="refresh"
+      >
+        Try again
+      </button>
+    </div>
+  </section>
+
+  <section
     v-else
     class="mx-auto p-4"
   >
@@ -14,15 +30,10 @@
       <EventTypeFilter v-model="selectedType" />
     </div>
 
-    <div
-      v-if="filteredEvents.length === 0"
-      class="rounded-xl border bg-white p-6 text-sm text-gray-600"
-    >
-      No events found.
-    </div>
+ 
 
     <div
-      v-else
+      v-if="filteredEvents.length"
       class="flex flex-wrap gap-4"
     >
       <div
@@ -55,13 +66,7 @@ const showDeleteModal = ref(false)
 const selectedEvent = ref<ApiEvent | null>(null)
 
 const store = useLocalEventsStore()
-const { data, isLoading } = useGetEventListQuery()
-
-watchEffect(() => {
-  if (!store.initialized && data.value) {
-    store.init(data.value)
-  }
-})
+const { isLoading, isError, refresh } = useGetEventListQuery()
 
 const selectedType = ref<'all' | EventType>('all')
 
@@ -77,7 +82,8 @@ function onSelect(id: string) {
 }
 
 function onDeleteClick(id: string) {
-  selectedEvent.value = (store.byId(id) ?? null) as ApiEvent | null
+  const found = store.byId(id)
+  selectedEvent.value = (found ?? null) as ApiEvent | null
   showDeleteModal.value = true
 }
 </script>

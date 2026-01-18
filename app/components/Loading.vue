@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-center py-10">
-    <div class="flex flex-col items-center gap-3">
+    <div class="flex flex-col items-center gap-3 max-w-[200px]">
       <svg
         class="h-8 w-8 animate-spin text-gray-700"
         xmlns="http://www.w3.org/2000/svg"
