@@ -1,7 +1,10 @@
 <template>
   <section class="flex flex-col gap-6 p-4">
-    <Loading v-if="isLoading" text="Loading event..." />
-
+    <div v-if="isLoading">
+      <ClientOnly>
+        <Loading text="Loading event..." />
+      </ClientOnly>
+    </div>
     <div
       v-else-if="isError"
       class="rounded-xl border bg-white p-6 text-sm text-red-700"
@@ -18,8 +21,11 @@
       />
       <h2 class="text-lg font-semibold mb-4">Statistics</h2>
 
-      <Loading v-if="statsLoading" text="Loading statistics..." />
-
+      <div v-if="statsLoading">
+        <ClientOnly>
+          <Loading text="Loading statistics..." />
+        </ClientOnly>
+      </div>
       <div
         v-else-if="statsError"
         class="rounded-xl border bg-white p-4 text-sm text-red-700"
@@ -78,11 +84,7 @@ const route = useRoute();
 const eventId = computed(() => String(route.query.id ?? ""));
 const isEditMode = computed(() => Boolean(eventId.value));
 
-const {
-  data: apiEvent,
-  isLoading,
-  isError,
-} = useGetEventByIdQuery(eventId);
+const { data: apiEvent, isLoading, isError } = useGetEventByIdQuery(eventId);
 
 const store = useLocalEventsStore();
 
