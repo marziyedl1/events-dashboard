@@ -1,11 +1,5 @@
-import { queryKeys } from '~/configs/queryKeys'
 import type { OnSiteStatistics } from '~/types'
-
-async function fetchOnsiteStats(eventId: string) {
-  return await $fetch<OnSiteStatistics>(
-    `/api/statistics/onsite/${encodeURIComponent(eventId)}`
-  )
-}
+import { queryKeys } from '~/configs/queryKeys'
 
 export default function useGetOnsiteStatsQuery(
   eventId: MaybeRefOrGetter<string>,
@@ -13,29 +7,25 @@ export default function useGetOnsiteStatsQuery(
 ) {
   const idRef = computed(() => String(unref(eventId) || ''))
   const isLocalEvent = computed(() => idRef.value.startsWith('local-'))
+  const enabledRef = computed(() => Boolean(unref(enabled)) && Boolean(idRef.value) && !isLocalEvent.value)
 
-  const enabledRef = computed(
-    () => Boolean(unref(enabled)) && Boolean(idRef.value) && !isLocalEvent.value
-  )
-
-  const key = computed(() => {
-    const parts = queryKeys.onsiteStats(idRef.value)
-    return Array.isArray(parts) ? parts.join(':') : String(parts)
-  })
+  const key = computed(() => queryKeys.onsiteStats(idRef.value).join(':'))
 
   const { data, pending, error, refresh } = useAsyncData<OnSiteStatistics | null>(
     key,
     async () => {
       if (!enabledRef.value) return null
-      return await fetchOnsiteStats(idRef.value)
+      return await $fetch<OnSiteStatistics>(`/api/onsite-statistics/${encodeURIComponent(idRef.value)}`)
     },
     {
       watch: [idRef, enabledRef],
-      immediate: enabledRef
+      default: () => null,
+      server:false
     }
   )
 
+  const isLoading = computed(() => pending.value)
   const isError = computed(() => Boolean(error.value))
 
-  return { data, isLoading: pending, isError, error, refresh }
+  return { data, isLoading, isError, error, refresh }
 }

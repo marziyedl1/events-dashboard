@@ -1,18 +1,20 @@
-import { queryKeys } from '~/configs/queryKeys'
 import type { ApiEvent } from '~/types'
-
-async function fetchEvents() {
-  return await $fetch<ApiEvent[]>('/api/events/')
-}
+import { queryKeys } from '~/configs/queryKeys'
 
 export function useGetEventListQuery() {
-  const key = Array.isArray(queryKeys.events)
-    ? queryKeys.events.join(':')
-    : String(queryKeys.events)
+  const key = queryKeys.events.join(':')
 
-  const { data, pending, error, refresh } = useAsyncData<ApiEvent[]>(key, fetchEvents)
+  const { data, pending, error, refresh } = useAsyncData<ApiEvent[]>(
+    key,
+    () => $fetch<ApiEvent[]>('/events/'),
+    {
+      default: () => [],
+      server:false
+    }
+  )
 
+  const isLoading = computed(() => pending.value)
   const isError = computed(() => Boolean(error.value))
 
-  return { data, isLoading: pending, isError, error, refresh }
+  return { data, isLoading, isError, error, refresh }
 }
