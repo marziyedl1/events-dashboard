@@ -97,13 +97,24 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const form = ref<ApiEvent>({
-  name: props.formData?.name  ||"",
-  year: Number(props.formData?.year  || new Date().getFullYear()),
-  startDate: toDateInput(props.formData?.startDate)  || new Date().toISOString().slice(0, 10),
-  endDate: toDateInput(props.formData?.endDate)  || new Date().toISOString().slice(0, 10),
-  type: (props.formData?.type ??  "Online") as EventType,
-});
+function buildForm(data?: ApiEvent): ApiEvent {
+  return {
+    name: data?.name || "",
+    year: Number(data?.year || new Date().getFullYear()),
+    startDate: toDateInput(data?.startDate) || new Date().toISOString().slice(0, 10),
+    endDate: toDateInput(data?.endDate) || new Date().toISOString().slice(0, 10),
+    type: (data?.type ?? "Online") as EventType,
+  };
+}
+
+const form = ref<ApiEvent>(buildForm(props.formData));
+watch(
+  () => props.formData,
+  (next) => {
+    form.value = buildForm(next);
+  },
+  { immediate: true }
+);
 
 const errors = ref<string[]>([]);
 

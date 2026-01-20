@@ -21,8 +21,9 @@
           class="rounded-md p-1 text-red-600 hover:bg-red-100"
           title="Delete"
           @click.stop="onDelete"
+          type="button"
         >
-          🗑️
+          <img src="@/app/assets/img/delete.svg" width="20">
         </button>
       </div>
     </div>
