@@ -9,7 +9,12 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prepare": "husky",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:unit": "vitest --project unit",
+    "test:nuxt": "vitest --project nuxt",
+     "e2e": "playwright test"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.2.1",
@@ -22,16 +27,22 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@nuxt/eslint": "^1.12.1",
+    "@nuxt/test-utils": "^3.23.0",
     "@nuxtjs/tailwindcss": "^6.14.0",
+    "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.9",
     "@typescript-eslint/eslint-plugin": "^8.53.0",
     "@typescript-eslint/parser": "^8.53.0",
+    "@vue/test-utils": "^2.4.6",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.7.0",
     "globals": "^17.0.0",
+    "happy-dom": "^20.3.4",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "typescript-eslint": "^8.53.0"
+    "playwright-core": "^1.57.0",
+    "typescript-eslint": "^8.53.0",
+    "vitest": "^4.0.17"
   }
 }

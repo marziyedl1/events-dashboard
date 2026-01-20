@@ -10,7 +10,7 @@ const statsUrl ='https://codechallenge-statistics.azurewebsites.net'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@pinia/nuxt', '@nuxtjs/i18n', '@nuxtjs/tailwindcss'],
+  modules: ['@pinia/nuxt', '@nuxtjs/i18n', '@nuxtjs/tailwindcss', '@nuxt/test-utils/module'],
     css: ['~/assets/css/main.css'],
 
   alias: {

@@ -15,6 +15,7 @@
       class="min-w-[300px] max-w-[300px]"
     >
       <EventCard
+        data-testid="event-card"
         :event="event"
         @select="navigateTo('/event' + `?id=${$event}`)"
         @delete="onDeleteClick(event)"
