@@ -6,10 +6,11 @@ export interface ApiEvent {
   startDate: string
   endDate: string
   type: EventType
+  _isLocal?: boolean
 }
 
 export interface LocalEvent extends ApiEvent {
   // local ids are prefixed so we can distinguish them safely
   id: `local-${string}`
-  _isLocal: true
+  _isLocal: boolean
 }

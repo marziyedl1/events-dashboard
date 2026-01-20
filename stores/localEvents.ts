@@ -21,13 +21,13 @@ function loadFromStorage(): LocalEvent[] {
 
 export const useLocalEventsStore = defineStore('localEvents', {
   state: () => ({
-    events: [] as (LocalEvent | (ApiEvent & { _isLocal: false }))[],
+    events: [] as (LocalEvent | (ApiEvent))[],
     initialized: false
   }),
 
   getters: {
     byId: (state) => (id: string) =>
-      state.events.find((e: LocalEvent | (ApiEvent & { _isLocal: false })) => e.id === id)
+      state.events.find((e: LocalEvent | (ApiEvent)) => e.id === id)
   },
 
   actions: {
@@ -36,7 +36,7 @@ export const useLocalEventsStore = defineStore('localEvents', {
 
       if (stored.length) {
         this.events = stored
-      } 
+      }
       else {
         this.events = apiEvents.map(e => ({
           id: e.id as string,
@@ -64,7 +64,7 @@ export const useLocalEventsStore = defineStore('localEvents', {
     },
 
     update(id: string, patch: Partial<ApiEvent>) {
-      const idx = this.events.findIndex((e: LocalEvent | (ApiEvent & { _isLocal: false })) => e.id === id)
+      const idx = this.events.findIndex((e: LocalEvent | (ApiEvent)) => e.id === id)
       if (idx === -1) return
 
       this.events[idx] = {
@@ -74,7 +74,7 @@ export const useLocalEventsStore = defineStore('localEvents', {
     },
 
     remove(id: string) {
-      this.events = this.events.filter((e: LocalEvent | (ApiEvent & { _isLocal: false })) => e.id !== id)
+      this.events = this.events.filter((e: LocalEvent | (ApiEvent)) => e.id !== id)
     }
   }
 })

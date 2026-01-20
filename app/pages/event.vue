@@ -1,27 +1,43 @@
 <template>
   <section class="flex flex-col gap-6 p-4">
-    <EventCard
-      v-if="localEvent && isEditMode"
-      :event="localEvent"
-      @select="navigateTo('/event/' + `?id=${$event}`)"
-      @delete="onDeleteClick()"
-    />
-    <Loading v-if="isLoading" />
+    <Loading v-if="isLoading" text="Loading event..." />
 
-    <section
-      v-if="isEditMode && statistics"
-      class="border-t pt-6 mt-6"
+    <div
+      v-else-if="isError"
+      class="rounded-xl border bg-white p-6 text-sm text-red-700"
     >
-      <h2 class="text-lg font-semibold mb-4">
-        Statistics
-      </h2>
+      Failed to load the event.
+    </div>
 
-      <Loading v-if="statsLoading" />
+    <section v-if="isEditMode" class="border-t pt-6 mt-6">
+      <EventCard
+        v-if="localEvent && isEditMode"
+        :event="localEvent"
+        @select="navigateTo('/event/' + `?id=${$event}`)"
+        @delete="onDeleteClick()"
+      />
+      <h2 class="text-lg font-semibold mb-4">Statistics</h2>
+
+      <Loading v-if="statsLoading" text="Loading statistics..." />
 
       <div
-        v-else
-        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        v-else-if="statsError"
+        class="rounded-xl border bg-white p-4 text-sm text-red-700"
       >
+        Failed to load statistics.
+        <button type="button" class="ml-2 underline" @click="refreshStats">
+          Try again
+        </button>
+      </div>
+
+      <div
+        v-else-if="!statistics || Object.keys(statistics).length === 0"
+        class="rounded-xl border bg-white p-4 text-sm text-gray-600"
+      >
+        No statistics available for this event.
+      </div>
+
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div
           v-for="(value, key) in statistics"
           :key="key"
@@ -36,18 +52,19 @@
         </div>
       </div>
     </section>
-  
+
     <FormEventForm
-      v-if="!isLoading"
+      v-if="!isLoading && !isError"
       :mode="isEditMode ? 'edit' : 'create'"
       :form-data="localEvent"
       @submit="onSubmit"
       @cancel="navigateTo('/')"
     />
+
     <ModalDeleteConfirmation
       :id="eventId"
       v-model:open="showDeleteModal"
-      :name="event?.name ?? null"
+      :name="localEvent?.name ?? null"
     />
   </section>
 </template>
@@ -58,74 +75,46 @@ import { useLocalEventsStore } from "@/stores/localEvents";
 
 const route = useRoute();
 
-const eventId = computed(() => route.query.id as string);
-const isEditMode = computed(() => !!eventId.value);
+const eventId = computed(() => String(route.query.id ?? ""));
+const isEditMode = computed(() => Boolean(eventId.value));
 
-const { data: event, isLoading } = useGetEventByIdQuery(eventId);
+const {
+  data: apiEvent,
+  isLoading,
+  isError,
+} = useGetEventByIdQuery(eventId);
 
 const store = useLocalEventsStore();
 
-const localEvent = computed(() =>
-  event.value
-    ? event.value
-    : store.events.find((e: any) => e.id === eventId.value),
-);
-
-
-const isOnline = computed(() => localEvent.value?.type === "Online");
-const isOnsite = computed(() => localEvent.value?.type === "OnSite");
-const isHybrid = computed(() => localEvent.value?.type === "Hybrid");
-
-const { data: onlineStats, isLoading: onlineLoading } = useGetOnlineStatsQuery(
-  eventId,
-  isOnline.value || isHybrid,
-);
-
-const { data: onsiteStats, isLoading: onsiteLoading } = useGetOnsiteStatsQuery(
-  eventId,
-  isOnsite.value || isHybrid,
-);
-
-const statistics = computed(() => {
-  if (!localEvent.value) return null;
-
-  if (isHybrid.value) {
-    return {
-      ...onlineStats.value,
-      ...onsiteStats.value,
-    };
-  }
-
-  if (isOnline.value) return onlineStats.value;
-  if (isOnsite.value) return onsiteStats.value;
-
-  return null;
+const localEvent = computed(() => {
+  return apiEvent.value ?? store.byId(eventId.value);
 });
 
-const statsLoading = computed(() => onlineLoading.value || onsiteLoading.value);
-
+const {
+  combined: statistics,
+  loading: statsLoading,
+  hasAnyError: statsError,
+  refresh: refreshStats,
+} = useEventStatistics(localEvent);
 
 const showDeleteModal = ref(false);
 
-function onDeleteClick() {
-  showDeleteModal.value = true;
-}
-
 function onSubmit(form: ApiEvent) {
-  if (isEditMode.value && localEvent.value?.id) {
-    submitEdit(form);
-  } else {
-    submitCreate(form);
-  }
+  if (isEditMode.value && localEvent.value?.id) submitEdit(form);
+  else submitCreate(form);
+
+  navigateTo("/");
 }
 
 function submitEdit(form: ApiEvent) {
   store.update(localEvent.value?.id as string, form as any);
-  navigateTo("/");
 }
 
 function submitCreate(form: ApiEvent) {
   store.create(form as any);
-  navigateTo("/");
+}
+
+function onDeleteClick() {
+  showDeleteModal.value = true;
 }
 </script>
