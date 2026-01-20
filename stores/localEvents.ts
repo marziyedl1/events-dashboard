@@ -19,6 +19,11 @@ function loadFromStorage(): LocalEvent[] {
   }
 }
 
+function saveToStorage(events: (LocalEvent | ApiEvent)[]) {
+  if (typeof globalThis !== 'undefined' && !globalThis.window) return
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(events))
+}
+
 export const useLocalEventsStore = defineStore('localEvents', {
   state: () => ({
     events: [] as (LocalEvent | (ApiEvent))[],
@@ -34,6 +39,15 @@ export const useLocalEventsStore = defineStore('localEvents', {
     init(apiEvents: ApiEvent[]) {
       const stored = loadFromStorage()
 
+      if (!this.initialized) {
+        if (typeof globalThis !== 'undefined' && globalThis.window) {
+          this.$subscribe((_, state) => {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state.events))
+          })
+        }
+        this.initialized = true
+      }
+
       if (stored.length) {
         this.events = stored
       }
@@ -44,15 +58,8 @@ export const useLocalEventsStore = defineStore('localEvents', {
           ...e
         }))
       }
+      saveToStorage(this.events)
 
-      if (!this.initialized) {
-        if (typeof globalThis !== 'undefined' && globalThis.window) {
-          this.$subscribe((_, state) => {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state.events))
-          })
-        }
-        this.initialized = true
-      }
     },
 
     create(input: ApiEvent) {
@@ -61,6 +68,7 @@ export const useLocalEventsStore = defineStore('localEvents', {
         _isLocal: true,
         ...input
       } as LocalEvent)
+      saveToStorage(this.events)
     },
 
     update(id: string, patch: Partial<ApiEvent>) {
@@ -71,10 +79,12 @@ export const useLocalEventsStore = defineStore('localEvents', {
         ...this.events[idx],
         ...patch
       }
+      saveToStorage(this.events)
     },
 
     remove(id: string) {
       this.events = this.events.filter((e: LocalEvent | (ApiEvent)) => e.id !== id)
+      saveToStorage(this.events)
     }
   }
 })
